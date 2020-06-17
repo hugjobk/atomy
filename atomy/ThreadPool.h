@@ -86,6 +86,7 @@ inline std::future<T> atomy::ThreadPool::excecute(std::function<T()> task)
   if (!ok)
   {
     p->set_exception(std::make_exception_ptr(std::exception("task queue is full")));
+    delete p;
   }
   return f;
 }
