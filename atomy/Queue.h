@@ -15,7 +15,7 @@ class Queue
     /**
      * @brief atomy::Queue constructor.
      * 
-     * @param n     Queue size is equal to 2^n.
+     * @param n     Queue size is equal to 2^n-1.
      */
     Queue(uint8_t n);
 
@@ -171,7 +171,7 @@ inline bool atomy::Queue<T>::empty() const
 template <typename T>
 inline size_t atomy::Queue<T>::size() const
 {
-    return _mask + 1;
+    return _mask;
 }
 
 template <typename T>

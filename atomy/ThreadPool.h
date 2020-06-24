@@ -31,7 +31,7 @@ public:
   /**
    * @brief atomy::ThreadPool constructor.
    * 
-   * @param n             Size of task queue is 2^n.
+   * @param n             Size of task queue is 2^n-1.
    * @param thread_count  Number of worker threads (default is number of CPUs).
    */
   ThreadPool(uint8_t n, uint32_t thread_count = 0);
