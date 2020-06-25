@@ -8,7 +8,7 @@
 
 int main(int argc, char const *argv[])
 {
-    // Create a pool with queue size of 2^20.
+    // Create a pool with queue size of 2^20-1.
     auto pool = new atomy::ThreadPool(20);
     std::atomic<int> count(0);
 
