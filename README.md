@@ -1,4 +1,4 @@
-# High performance, thread-safe atomic stack, queue and thread pool.
+# High performance, thread-safe atomic stack, queue, channel and thread pool.
 
 ## Usage
 
