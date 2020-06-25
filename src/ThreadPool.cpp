@@ -34,24 +34,17 @@ bool ThreadPool::excecute(std::function<void()> task)
 
 void ThreadPool::workerProcess()
 {
-    uint32_t retry = 0;
     std::function<void()> task;
     for (;;)
     {
-        if (!_tasks.pop(task))
+        if (_tasks.pop(task, std::chrono::milliseconds(100)))
         {
-            if (!_active)
-            {
-                break;
-            }
-            if (++retry >= ATOMY_THREADPOOL_MAX_RETRY)
-            {
-                std::this_thread::sleep_for(std::chrono::milliseconds(ATOMY_THREADPOOL_SLEEP_DURATION));
-            }
-            continue;
+            task();
         }
-        task();
-        retry = 0;
+        else if (!_active)
+        {
+            break;
+        }
     }
 }
 } /* namespace atomy */

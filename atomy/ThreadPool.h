@@ -1,27 +1,14 @@
 #ifndef ATOMY_THREADPOOL_H_
 #define ATOMY_THREADPOOL_H_
 
-#include "Queue.h"
+#include "Channel.h"
 
+#include <atomic>
 #include <exception>
 #include <functional>
 #include <future>
 #include <thread>
 #include <vector>
-
-/**
- * Number of retires to execute next task if available before putting worker thread to sleep.
- */
-#ifndef ATOMY_THREADPOOL_MAX_RETRY
-#define ATOMY_THREADPOOL_MAX_RETRY 5
-#endif
-
-/**
- *  Sleep time duration in milliseconds of worker thread when there is no task available.
- */
-#ifndef ATOMY_THREADPOOL_SLEEP_DURATION
-#define ATOMY_THREADPOOL_SLEEP_DURATION 5
-#endif
 
 namespace atomy
 {
@@ -66,9 +53,9 @@ public:
   std::future<T> excecute(std::function<T()> task);
 
 private:
-  bool _active;
+  std::atomic<bool> _active;
   std::vector<std::thread> _workers;
-  Queue<std::function<void()>> _tasks;
+  Channel<std::function<void()>> _tasks;
 
   void workerProcess();
 };
