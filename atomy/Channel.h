@@ -5,6 +5,7 @@
 
 #include <condition_variable>
 #include <chrono>
+#include <memory>
 #include <mutex>
 
 namespace atomy
@@ -68,27 +69,25 @@ class Channel
     bool try_pop(T &item);
 
   private:
-    Queue<T> *_queue;
-    std::mutex _mtx;
-    std::condition_variable _cv;
+    std::shared_ptr<Queue<T>> _queue;
+    std::shared_ptr<std::mutex> _mtx;
+    std::shared_ptr<std::condition_variable> _cv;
 };
 } /* namespace atomy */
 
 template <typename T>
-inline atomy::Channel<T>::Channel(uint8_t n) : _queue(new Queue<T>(n)) {}
+inline atomy::Channel<T>::Channel(uint8_t n)
+    : _queue(new Queue<T>(n)), _mtx(new std::mutex()), _cv(new std::condition_variable()) {}
 
 template <typename T>
-inline atomy::Channel<T>::~Channel()
-{
-    delete _queue;
-}
+inline atomy::Channel<T>::~Channel() {}
 
 template <typename T>
 inline bool atomy::Channel<T>::push(T &&item)
 {
     if (_queue->push(std::move(item)))
     {
-        _cv.notify_one();
+        _cv->notify_one();
         return true;
     }
     return false;
@@ -99,7 +98,7 @@ inline bool atomy::Channel<T>::push(const T &item)
 {
     if (_queue->push(item))
     {
-        _cv.notify_one();
+        _cv->notify_one();
         return true;
     }
     return false;
@@ -112,8 +111,8 @@ inline void atomy::Channel<T>::pop(T &item)
     {
         return;
     }
-    std::unique_lock<std::mutex> lck(_mtx);
-    _cv.wait(lck, [this, &item] { return this->_queue->pop(item); });
+    std::unique_lock<std::mutex> lck(*_mtx);
+    _cv->wait(lck, [this, &item] { return this->_queue->pop(item); });
     lck.unlock();
 }
 
@@ -125,8 +124,8 @@ inline bool atomy::Channel<T>::pop(T &item, std::chrono::duration<Rep, Period> t
     {
         return true;
     }
-    std::unique_lock<std::mutex> lck(_mtx);
-    if (_cv.wait_for(lck, timeout, [this, &item] { return this->_queue->pop(item); }))
+    std::unique_lock<std::mutex> lck(*_mtx);
+    if (_cv->wait_for(lck, timeout, [this, &item] { return this->_queue->pop(item); }))
     {
         lck.unlock();
         return true;
