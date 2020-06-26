@@ -35,16 +35,16 @@ bool ThreadPool::excecute(std::function<void()> task)
 void ThreadPool::workerProcess()
 {
     std::function<void()> task;
-    for (;;)
+    while (_active)
     {
         if (_tasks.pop(task, std::chrono::milliseconds(100)))
         {
             task();
         }
-        else if (!_active)
-        {
-            break;
-        }
+    }
+    while (_tasks.try_pop(task))
+    {
+        task();
     }
 }
 } /* namespace atomy */
