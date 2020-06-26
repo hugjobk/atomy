@@ -58,6 +58,15 @@ class Channel
     template <typename Rep, typename Period>
     bool pop(T &item, std::chrono::duration<Rep, Period> timeout);
 
+    /**
+     * @brief If there is available item, pop it from the channel.
+     * 
+     * @param item  An item pop from the channel.
+     * 
+     * @return true if pop successfully and false if channel is empty.
+     */
+    bool try_pop(T &item);
+
   private:
     Queue<T> *_queue;
     std::mutex _mtx;
@@ -123,6 +132,12 @@ inline bool atomy::Channel<T>::pop(T &item, std::chrono::duration<Rep, Period> t
         return true;
     }
     return false;
+}
+
+template <typename T>
+inline bool atomy::Channel<T>::try_pop(T &item)
+{
+    return _queue->pop(item);
 }
 
 #endif
