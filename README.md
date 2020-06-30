@@ -48,3 +48,13 @@ To build shared library:
 To build test example:
 
     $ make test
+
+Run test example:
+
+    $ ./bin/test
+
+Output:
+
+```
+Completed 1000000 tasks in 433 ms.
+```

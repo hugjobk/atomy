@@ -17,7 +17,7 @@ class Channel
     /**
      * @brief atomy::Channel constructor.
      * 
-     * @param n     Size of channel is 2^n-1
+     * @param n     Size of channel is 2^n-1.
      */
     Channel(uint8_t n = 1);
 
